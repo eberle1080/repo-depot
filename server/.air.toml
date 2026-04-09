@@ -1,0 +1,21 @@
+root = "."
+tmp_dir = "tmp"
+
+[build]
+  bin = "./tmp/server"
+  cmd = "go build -o ./tmp/server ."
+  delay = 1000
+  exclude_dir = ["tmp"]
+  include_ext = ["go"]
+  kill_delay = "500ms"
+  send_interrupt = true
+
+[color]
+  build = "yellow"
+  main = "magenta"
+  runner = "green"
+  watcher = "cyan"
+
+[screen]
+  clear_on_rebuild = false
+  keep_scroll = true

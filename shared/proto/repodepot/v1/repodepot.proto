@@ -1,0 +1,507 @@
+syntax = "proto3";
+
+package repodepot.v1;
+
+option go_package = "github.com/eberle1080/repo-depot/shared/gen/repodepot/v1;repodepotv1";
+
+service RepodepotService {
+  rpc Ping(PingRequest) returns (PingResponse);
+
+  // CreateProject initializes a new project: creates a bare repo in the depot
+  // and a working tree under workspaces_path/<name> on the host.
+  rpc CreateProject(CreateProjectRequest) returns (CreateProjectResponse);
+
+  // CloneRepo pulls a remote repository into a project as a subtree.
+  // The depot bare cache is created or updated as needed.
+  rpc CloneRepo(CloneRepoRequest) returns (CloneRepoResponse);
+
+  // SaveProject commits and pushes all read-write subtrees back to their bare
+  // caches, then commits and pushes the project repo itself. Safe to blow away
+  // the workspace after this returns successfully.
+  rpc SaveProject(SaveProjectRequest) returns (SaveProjectResponse);
+
+  // ListProjects returns all projects known to the depot.
+  rpc ListProjects(ListProjectsRequest) returns (ListProjectsResponse);
+
+  // DeleteProject archives the workspace to a timestamped zip under
+  // depot/archives/, then removes the workspace directory.
+  // The bare repo in the depot is preserved.
+  rpc DeleteProject(DeleteProjectRequest) returns (DeleteProjectResponse);
+
+  // RenameProject renames the bare repo in the depot and updates the origin
+  // remote in the calling worktree automatically.
+  rpc RenameProject(RenameProjectRequest) returns (RenameProjectResponse);
+
+  // CheckoutProject re-creates a workspace for an existing project bare repo.
+  // Use this after DeleteProject or on a fresh machine where the workspace is gone.
+  rpc CheckoutProject(CheckoutProjectRequest) returns (CheckoutProjectResponse);
+
+  // --- PR Management ---
+
+  // CreatePR opens a new pull request.
+  rpc CreatePR(CreatePRRequest) returns (CreatePRResponse);
+
+  // ListPRs lists pull requests for a repository.
+  rpc ListPRs(ListPRsRequest) returns (ListPRsResponse);
+
+  // GetPR returns full details for a single pull request.
+  rpc GetPR(GetPRRequest) returns (GetPRResponse);
+
+  // MergePR merges a pull request.
+  rpc MergePR(MergePRRequest) returns (MergePRResponse);
+
+  // RequestReview requests a review from one or more users.
+  rpc RequestReview(RequestReviewRequest) returns (RequestReviewResponse);
+
+  // ListPRComments returns all comments (issue and review) on a pull request.
+  rpc ListPRComments(ListPRCommentsRequest) returns (ListPRCommentsResponse);
+
+  // CommentOnPR posts a comment on a pull request. If in_reply_to is set,
+  // it posts a reply in a review comment thread.
+  rpc CommentOnPR(CommentOnPRRequest) returns (CommentOnPRResponse);
+
+  // ListPRChecks returns the status of all CI checks for a pull request.
+  rpc ListPRChecks(ListPRChecksRequest) returns (ListPRChecksResponse);
+
+  // GetCheckLogs returns the logs for a specific workflow run.
+  rpc GetCheckLogs(GetCheckLogsRequest) returns (GetCheckLogsResponse);
+
+  // GetPRTemplate fetches the pull request description template from a GitHub repo.
+  rpc GetPRTemplate(GetPRTemplateRequest) returns (GetPRTemplateResponse);
+
+  // --- Graphite (gt) ---
+
+  // GtSync syncs the stack with the remote and restacks as needed.
+  rpc GtSync(GtSyncRequest) returns (GtSyncResponse);
+
+  // GtCreate creates a new branch stacked on the current branch.
+  rpc GtCreate(GtCreateRequest) returns (GtCreateResponse);
+
+  // GtSubmit submits the stack (or current branch) to GitHub as PRs.
+  rpc GtSubmit(GtSubmitRequest) returns (GtSubmitResponse);
+
+  // GtUp navigates up the stack by n branches (default 1).
+  rpc GtUp(GtUpRequest) returns (GtUpResponse);
+
+  // GtDown navigates down the stack by n branches (default 1).
+  rpc GtDown(GtDownRequest) returns (GtDownResponse);
+
+  // GtLog returns the current stack as text.
+  rpc GtLog(GtLogRequest) returns (GtLogResponse);
+
+  // --- Google Cloud Build ---
+
+  // ListBuilds returns GCB builds matching the given filters.
+  rpc ListBuilds(ListBuildsRequest) returns (ListBuildsResponse);
+
+  // GetBuildLogs returns the log output for a specific GCB build.
+  rpc GetBuildLogs(GetBuildLogsRequest) returns (GetBuildLogsResponse);
+
+  // --- Sync ---
+
+  // FetchRepo refreshes the bare cache for a remote URL without touching any workspace.
+  rpc FetchRepo(FetchRepoRequest) returns (FetchRepoResponse);
+
+  // PullRepo merges upstream changes for a specific subtree into the project workspace.
+  rpc PullRepo(PullRepoRequest) returns (PullRepoResponse);
+
+  // SyncProject fetches or pulls all subtrees in a project at once.
+  rpc SyncProject(SyncProjectRequest) returns (SyncProjectResponse);
+}
+
+// --- Ping ---
+
+message PingRequest {
+  string message = 1;
+}
+
+message PingResponse {
+  string message = 1;
+}
+
+// --- CreateProject ---
+
+message CreateProjectRequest {
+  // name is the project identifier. The workspace will be created at
+  // workspaces_path/<name> on the host.
+  string name = 1;
+}
+
+message CreateProjectResponse {
+  // name echoes back the project name.
+  string name = 1;
+}
+
+// --- CloneRepo ---
+
+message CloneRepoRequest {
+  // name identifies the project to clone into.
+  string name = 1;
+  // remote_url is the upstream URL of the repository (e.g. https://github.com/foo/bar).
+  string remote_url = 2;
+  // read_only controls whether the repo is checked out on main (true) or
+  // on the project branch (false).
+  bool read_only = 3;
+  // prefix overrides the subtree directory name. Defaults to the repo name
+  // (last path segment of remote_url).
+  string prefix = 4;
+}
+
+message CloneRepoResponse {
+  // prefix is the subtree directory that was used.
+  string prefix = 1;
+}
+
+// --- SaveProject ---
+
+message SaveProjectRequest {
+  string name = 1;
+}
+
+message SaveProjectResponse {}
+
+// --- ListProjects ---
+
+message ListProjectsRequest {}
+
+message ListProjectsResponse {
+  repeated ProjectInfo projects = 1;
+}
+
+message ProjectInfo {
+  string name = 1;
+}
+
+// --- DeleteProject ---
+
+message DeleteProjectRequest {
+  string name = 1;
+}
+
+message DeleteProjectResponse {
+  // archive_path is the path of the zip file that was created.
+  string archive_path = 1;
+}
+
+// --- RenameProject ---
+
+message RenameProjectRequest {
+  string old_name = 1;
+  string new_name = 2;
+}
+
+message RenameProjectResponse {
+  // new_bare_path is the new location of the bare repo in the depot,
+  // returned so the caller can update its origin remote.
+  string new_bare_path = 1;
+}
+
+// --- CheckoutProject ---
+
+message CheckoutProjectRequest {
+  string name = 1;
+}
+
+message CheckoutProjectResponse {}
+
+// --- PR Management common types ---
+
+message PRInfo {
+  int64  number      = 1;
+  string title       = 2;
+  string state       = 3;
+  string url         = 4;
+  string author      = 5;
+  string head_branch = 6;
+  string base_branch = 7;
+  string created_at  = 8;
+  string body        = 9;
+}
+
+message PRComment {
+  int64  id           = 1;
+  string author       = 2;
+  string body         = 3;
+  string created_at   = 4;
+  // "issue" for top-level PR comments, "review" for inline code review comments.
+  string comment_type = 5;
+  // For review comments: ID of the parent comment this replies to (0 if top-level).
+  int64  in_reply_to  = 6;
+  // For review comments: the file path.
+  string path         = 7;
+  // For review comments: the line number.
+  int32  line         = 8;
+  string url          = 9;
+}
+
+message CheckInfo {
+  int64  run_id      = 1;
+  string name        = 2;
+  // queued, in_progress, completed
+  string status      = 3;
+  // success, failure, cancelled, skipped, etc.
+  string conclusion  = 4;
+  string url         = 5;
+}
+
+// --- CreatePR ---
+
+message CreatePRRequest {
+  string repo  = 1;
+  string org   = 2;
+  string title = 3;
+  string body  = 4;
+  // head is the branch to merge from.
+  string head  = 5;
+  // base is the branch to merge into (default: main).
+  string base  = 6;
+  bool   draft = 7;
+}
+
+message CreatePRResponse {
+  int64  number = 1;
+  string url    = 2;
+  string title  = 3;
+}
+
+// --- ListPRs ---
+
+message ListPRsRequest {
+  string repo  = 1;
+  string org   = 2;
+  // open, closed, merged, all (default: open)
+  string state = 3;
+}
+
+message ListPRsResponse {
+  repeated PRInfo pull_requests = 1;
+}
+
+// --- GetPR ---
+
+message GetPRRequest {
+  string repo   = 1;
+  string org    = 2;
+  int64  number = 3;
+}
+
+message GetPRResponse {
+  PRInfo pull_request = 1;
+}
+
+// --- MergePR ---
+
+message MergePRRequest {
+  string repo   = 1;
+  string org    = 2;
+  int64  number = 3;
+  // merge, squash, rebase (default: merge)
+  string method = 4;
+}
+
+message MergePRResponse {}
+
+// --- RequestReview ---
+
+message RequestReviewRequest {
+  string          repo      = 1;
+  string          org       = 2;
+  int64           number    = 3;
+  repeated string reviewers = 4;
+}
+
+message RequestReviewResponse {}
+
+// --- ListPRComments ---
+
+message ListPRCommentsRequest {
+  string repo   = 1;
+  string org    = 2;
+  int64  number = 3;
+}
+
+message ListPRCommentsResponse {
+  repeated PRComment comments = 1;
+}
+
+// --- CommentOnPR ---
+
+message CommentOnPRRequest {
+  string repo        = 1;
+  string org         = 2;
+  int64  number      = 3;
+  string body        = 4;
+  // If non-zero, post as a reply in the given review comment thread.
+  int64  in_reply_to = 5;
+}
+
+message CommentOnPRResponse {
+  int64  comment_id = 1;
+  string url        = 2;
+}
+
+// --- ListPRChecks ---
+
+message ListPRChecksRequest {
+  string repo   = 1;
+  string org    = 2;
+  int64  number = 3;
+}
+
+message ListPRChecksResponse {
+  repeated CheckInfo checks = 1;
+}
+
+// --- GetCheckLogs ---
+
+message GetCheckLogsRequest {
+  string repo   = 1;
+  string org    = 2;
+  int64  run_id = 3;
+}
+
+message GetCheckLogsResponse {
+  string logs = 1;
+}
+
+// --- GetPRTemplate ---
+
+message GetPRTemplateRequest {
+  string repo = 1;
+  string org  = 2;
+}
+
+message GetPRTemplateResponse {
+  string template = 1;
+}
+
+// --- Graphite ---
+
+message GtSyncRequest {
+  string name = 1;
+}
+
+message GtSyncResponse {}
+
+message GtCreateRequest {
+  string name    = 1;
+  string branch  = 2;
+  string message = 3;
+}
+
+message GtCreateResponse {}
+
+message GtSubmitRequest {
+  string name  = 1;
+  // stack submits the entire stack; false submits only the current branch.
+  bool   stack = 2;
+  bool   draft = 3;
+  // title and body apply to new PRs; omit to use commit message defaults.
+  string title = 4;
+  string body  = 5;
+}
+
+message GtSubmitResponse {
+  // output is the raw gt submit output (PR URLs, status lines, etc.)
+  string output = 1;
+}
+
+message GtUpRequest {
+  string name  = 1;
+  // steps defaults to 1 if zero.
+  int32  steps = 2;
+}
+
+message GtUpResponse {
+  // branch is the name of the branch now checked out.
+  string branch = 1;
+}
+
+message GtDownRequest {
+  string name  = 1;
+  int32  steps = 2;
+}
+
+message GtDownResponse {
+  string branch = 1;
+}
+
+message GtLogRequest {
+  string name = 1;
+}
+
+message GtLogResponse {
+  string output = 1;
+}
+
+// --- Google Cloud Build ---
+
+message BuildInfo {
+  string id          = 1;
+  // QUEUED, WORKING, SUCCESS, FAILURE, INTERNAL_ERROR, TIMEOUT, CANCELLED
+  string status      = 2;
+  string create_time = 3;
+  string finish_time = 4;
+  string log_url     = 5;
+  string commit_sha  = 6;
+  string branch      = 7;
+  string pr_number   = 8;
+}
+
+// --- ListBuilds ---
+
+message ListBuildsRequest {
+  // project overrides gcloud.default_project from config.
+  string project    = 1;
+  // At least one filter should be set.
+  string commit_sha = 2;
+  string pr_number  = 3;
+  string branch     = 4;
+  // Maximum number of results to return (default: 10).
+  int32  limit      = 5;
+}
+
+message ListBuildsResponse {
+  repeated BuildInfo builds = 1;
+}
+
+// --- GetBuildLogs ---
+
+message GetBuildLogsRequest {
+  // project overrides gcloud.default_project from config.
+  string project  = 1;
+  string build_id = 2;
+}
+
+message GetBuildLogsResponse {
+  string logs = 1;
+}
+
+// --- FetchRepo ---
+
+message FetchRepoRequest {
+  string name       = 1;
+  string remote_url = 2;
+}
+
+message FetchRepoResponse {}
+
+// --- PullRepo ---
+
+message PullRepoRequest {
+  string name         = 1;
+  string remote_url   = 2;
+  bool   use_graphite = 3;
+}
+
+message PullRepoResponse {}
+
+// --- SyncProject ---
+
+message SyncProjectRequest {
+  string name         = 1;
+  bool   fetch_only   = 2;
+  bool   use_graphite = 3;
+}
+
+message SyncProjectResponse {}

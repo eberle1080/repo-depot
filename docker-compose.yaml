@@ -1,0 +1,28 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    ports:
+      - "50051:50051"
+    environment:
+      GRPC_PORT: "50051"
+
+  server-dev:
+    build:
+      context: .
+      dockerfile: server/Dockerfile.dev
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+      - go-mod-cache:/go/pkg/mod
+      - go-build-cache:/root/.cache/go-build
+    ports:
+      - "50051:50051"
+    environment:
+      GRPC_PORT: "50051"
+    command: air -c .air.toml
+
+volumes:
+  go-mod-cache:
+  go-build-cache:
