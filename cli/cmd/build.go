@@ -102,4 +102,3 @@ func init() {
 	buildCmd.AddCommand(buildLogsCmd)
 	rootCmd.AddCommand(buildCmd)
 }
-

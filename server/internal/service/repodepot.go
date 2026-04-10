@@ -7,13 +7,13 @@ import (
 	"strings"
 
 	"github.com/amp-labs/amp-common/logger"
-	repodepotv1 "github.com/eberle1080/repo-depot/shared/gen/repodepot/v1"
 	"github.com/eberle1080/repo-depot/server/config"
-	"github.com/eberle1080/repo-depot/server/internal/depot"
 	"github.com/eberle1080/repo-depot/server/internal/approval"
-	"github.com/eberle1080/repo-depot/server/internal/gh"
+	"github.com/eberle1080/repo-depot/server/internal/depot"
 	"github.com/eberle1080/repo-depot/server/internal/gcloud"
+	"github.com/eberle1080/repo-depot/server/internal/gh"
 	"github.com/eberle1080/repo-depot/server/internal/gt"
+	repodepotv1 "github.com/eberle1080/repo-depot/shared/gen/repodepot/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -21,7 +21,7 @@ import (
 // RepodepotService implements the RepodepotServiceServer interface.
 type RepodepotService struct {
 	repodepotv1.UnimplementedRepodepotServiceServer
-	cfg      *config.Config
+	cfg       *config.Config
 	approvals *approval.Manager
 }
 

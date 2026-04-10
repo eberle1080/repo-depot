@@ -11,11 +11,11 @@ import (
 	"github.com/amp-labs/amp-common/envutil"
 	"github.com/amp-labs/amp-common/logger"
 	"github.com/amp-labs/amp-common/startup"
-	"github.com/eberle1080/repo-depot/shared/build"
-	repodepotv1 "github.com/eberle1080/repo-depot/shared/gen/repodepot/v1"
 	"github.com/eberle1080/repo-depot/server/config"
 	"github.com/eberle1080/repo-depot/server/internal/approval"
 	"github.com/eberle1080/repo-depot/server/internal/service"
+	"github.com/eberle1080/repo-depot/shared/build"
+	repodepotv1 "github.com/eberle1080/repo-depot/shared/gen/repodepot/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )

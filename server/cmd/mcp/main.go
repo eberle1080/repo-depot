@@ -10,13 +10,13 @@ import (
 	"github.com/amp-labs/amp-common/logger"
 	"github.com/amp-labs/amp-common/startup"
 	"github.com/eberle1080/mcp-protocol/schema"
-	"github.com/eberle1080/repo-depot/shared/build"
 	serverproto "github.com/eberle1080/mcp-protocol/server"
 	mcpserver "github.com/eberle1080/mcp/server"
 	"github.com/eberle1080/repo-depot/server/config"
 	"github.com/eberle1080/repo-depot/server/internal/approval"
 	"github.com/eberle1080/repo-depot/server/internal/mcptools"
 	"github.com/eberle1080/repo-depot/server/internal/service"
+	"github.com/eberle1080/repo-depot/shared/build"
 )
 
 func main() {

@@ -7,8 +7,8 @@ import (
 	"github.com/eberle1080/jsonrpc"
 	"github.com/eberle1080/mcp-protocol/schema"
 	serverproto "github.com/eberle1080/mcp-protocol/server"
-	repodepotv1 "github.com/eberle1080/repo-depot/shared/gen/repodepot/v1"
 	"github.com/eberle1080/repo-depot/server/internal/service"
+	repodepotv1 "github.com/eberle1080/repo-depot/shared/gen/repodepot/v1"
 )
 
 // --- input/output types ---
@@ -41,8 +41,10 @@ type repoCloneOutput struct {
 	Prefix string `json:"prefix"`
 }
 
-type emptyInput struct{}
-type emptyOutput struct{}
+type (
+	emptyInput  struct{}
+	emptyOutput struct{}
+)
 
 // --- registration ---
 

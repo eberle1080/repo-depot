@@ -16,8 +16,8 @@ import (
 )
 
 const (
-	signalsQueue   = "cassandra.signals"
-	responsesQueue = "cassandra.responses"
+	signalsQueue    = "cassandra.signals"
+	responsesQueue  = "cassandra.responses"
 	approvalTimeout = 5 * time.Minute
 )
 
@@ -161,7 +161,7 @@ func (m *Manager) Request(ctx context.Context, title, body string) error {
 	}
 
 	if err := m.pubCh.PublishWithContext(ctx,
-		"",            // default exchange
+		"", // default exchange
 		signalsQueue,
 		false,
 		false,

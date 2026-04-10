@@ -191,7 +191,6 @@ func init() {
 	gtSubmitCmd.Flags().String("title", "", "PR title for new PRs (defaults to commit message)")
 	gtSubmitCmd.Flags().String("body", "", "PR description for new PRs (use 'pr template' to get the template first)")
 
-
 	gtUpCmd.Flags().Int32("steps", 1, "Number of branches to move up")
 	gtDownCmd.Flags().Int32("steps", 1, "Number of branches to move down")
 

@@ -139,4 +139,3 @@ func (r *Runner) ListBuilds(ctx context.Context, commitSHA, prNumber, branch str
 func (r *Runner) GetBuildLogs(ctx context.Context, buildID string) (string, error) {
 	return r.outputString(ctx, "builds", "log", buildID, "--project", r.project)
 }
-
