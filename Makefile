@@ -23,7 +23,7 @@ proto: ## Regenerate protobuf/gRPC code from .proto files
 ##@ Build
 
 .PHONY: build
-build: build/server build/cli ## Build all binaries
+build: build/server build/cli build/mcp ## Build all binaries
 
 .PHONY: build/server
 build/server: ## Build the server binary
@@ -34,6 +34,11 @@ build/server: ## Build the server binary
 build/cli: ## Build the CLI binary
 	@mkdir -p bin
 	go build -o bin/rdcli ./cli
+
+.PHONY: build/mcp
+build/mcp: ## Build the MCP server binary
+	@mkdir -p bin
+	go build -o bin/repo-depot-mcp ./server/cmd/mcp
 
 ##@ Development
 
