@@ -11,6 +11,7 @@ import (
 	"github.com/amp-labs/amp-common/envutil"
 	"github.com/amp-labs/amp-common/logger"
 	"github.com/amp-labs/amp-common/startup"
+	"github.com/eberle1080/repo-depot/shared/build"
 	repodepotv1 "github.com/eberle1080/repo-depot/shared/gen/repodepot/v1"
 	"github.com/eberle1080/repo-depot/server/config"
 	"github.com/eberle1080/repo-depot/server/internal/approval"
@@ -29,6 +30,10 @@ func main() {
 
 	logger.ConfigureLogging(ctx, "repo-depot-server")
 	log := logger.Get(ctx)
+
+	if info, ok := build.ReadInfo(); ok {
+		log.Info("build info", "commit", info.GitCommit, "branch", info.GitBranch, "built", info.BuildTime)
+	}
 
 	cfg, err := config.Load(ctx)
 	if err != nil {

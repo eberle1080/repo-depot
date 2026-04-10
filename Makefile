@@ -22,8 +22,12 @@ proto: ## Regenerate protobuf/gRPC code from .proto files
 
 ##@ Build
 
+.PHONY: generate
+generate: ## Generate build info (shared/build/info.json)
+	go generate ./shared/build
+
 .PHONY: build
-build: build/server build/cli build/mcp ## Build all binaries
+build: generate build/server build/cli build/mcp ## Build all binaries
 
 .PHONY: build/server
 build/server: ## Build the server binary

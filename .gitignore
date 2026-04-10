@@ -1,6 +1,9 @@
 bin/
 bin/*
 
+# Generated build info (created by go generate ./shared/build)
+shared/build/info.json
+
 # Created by https://www.toptal.com/developers/gitignore/api/go,goland+all,emacs,vim,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=go,goland+all,emacs,vim,visualstudiocode
 

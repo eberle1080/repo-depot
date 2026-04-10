@@ -10,6 +10,7 @@ import (
 	"github.com/amp-labs/amp-common/logger"
 	"github.com/amp-labs/amp-common/startup"
 	"github.com/eberle1080/mcp-protocol/schema"
+	"github.com/eberle1080/repo-depot/shared/build"
 	serverproto "github.com/eberle1080/mcp-protocol/server"
 	mcpserver "github.com/eberle1080/mcp/server"
 	"github.com/eberle1080/repo-depot/server/config"
@@ -46,6 +47,11 @@ func main() {
 
 	svc := service.New(cfg, approvals)
 
+	version := "dev"
+	if info, ok := build.ReadInfo(); ok {
+		version = info.GitCommit[:8]
+	}
+
 	newHandler := serverproto.WithDefaultHandler(ctx, func(h *serverproto.DefaultHandler) error {
 		return mcptools.RegisterAll(h, svc)
 	})
@@ -54,7 +60,7 @@ func main() {
 		mcpserver.WithNewHandler(newHandler),
 		mcpserver.WithImplementation(schema.Implementation{
 			Name:    "repo-depot",
-			Version: "1.0.0",
+			Version: version,
 		}),
 	)
 	if err != nil {

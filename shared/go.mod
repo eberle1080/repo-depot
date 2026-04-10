@@ -1,6 +1,6 @@
 module github.com/eberle1080/repo-depot/shared
 
-go 1.25.0
+go 1.25.1
 
 require (
 	google.golang.org/grpc v1.80.0
@@ -8,6 +8,7 @@ require (
 )
 
 require (
+	github.com/amp-labs/amp-common v0.0.0-20260409234248-220946d9c006 // indirect
 	golang.org/x/net v0.53.0 // indirect
 	golang.org/x/sys v0.43.0 // indirect
 	golang.org/x/text v0.36.0 // indirect
