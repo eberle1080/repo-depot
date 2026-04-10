@@ -31,7 +31,7 @@ Three modules under `go.work`:
 
 - **`shared/`** — Proto definitions (`shared/proto/repodepot.proto`) and generated gRPC code (`shared/gen/repodepotv1`). This is the shared contract between server and CLI.
 - **`server/`** — gRPC server (port 50051) and MCP server (stdio or HTTP). Entry points: `server/main.go` (gRPC), `server/cmd/mcp/main.go` (MCP).
-- **`cli/`** — Cobra CLI client (`rdcli`). Commands in `cli/cmd/`.
+- **`cli/`** — Cobra CLI client (`repo`). Commands in `cli/cmd/`.
 
 ## Architecture
 

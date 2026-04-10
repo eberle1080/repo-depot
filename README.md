@@ -8,7 +8,7 @@ repo-depot maintains a centralized depot of bare git repositories on disk and ma
 
 ```
                   +-----------+
-                  |  rdcli    |  (Cobra CLI)
+                  |  repo    |  (Cobra CLI)
                   +-----+-----+
                         | gRPC
                   +-----v-----+
@@ -51,7 +51,7 @@ repo-depot maintains a centralized depot of bare git repositories on disk and ma
 make build          # Build both binaries to bin/
 ```
 
-This produces `bin/repo-depot-server` and `bin/rdcli`.
+This produces `bin/repo-depot-server` and `bin/repo`.
 
 ### Configure
 
@@ -82,16 +82,16 @@ make dev
 
 ```bash
 # Create a project workspace
-rdcli project create my-project
+repo project create my-project
 
 # Clone a repo into it (uses bare cache)
-rdcli clone my-project --url https://github.com/org/repo
+repo clone my-project --url https://github.com/org/repo
 
 # Save work back
-rdcli save my-project
+repo save my-project
 
 # List all projects
-rdcli project list
+repo project list
 ```
 
 The CLI connects to `localhost:50051` by default. Override with `--server`.
@@ -119,7 +119,7 @@ make docker/up       # Production server in Docker
 
 ```
 repo-depot/
-  cli/           Cobra CLI client (rdcli)
+  cli/           Cobra CLI client (repo)
   server/        gRPC server
     config/      YAML config loader
     internal/    Server implementation

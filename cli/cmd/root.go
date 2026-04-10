@@ -9,7 +9,7 @@ import (
 var serverAddr string
 
 var rootCmd = &cobra.Command{
-	Use:   "rdcli",
+	Use:   "repo",
 	Short: "repo-depot CLI",
 	Long:  "CLI client for the repo-depot gRPC server.",
 }

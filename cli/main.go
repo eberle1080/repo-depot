@@ -9,6 +9,6 @@ import (
 
 func main() {
 	ctx := context.Background()
-	logger.ConfigureLogging(ctx, "rdcli")
+	logger.ConfigureLogging(ctx, "repo")
 	cmd.Execute()
 }

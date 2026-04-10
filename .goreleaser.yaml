@@ -1,0 +1,94 @@
+# Documentation at https://goreleaser.com
+version: 2
+
+before:
+  hooks:
+    - go work sync
+    - go generate ./shared/build
+
+builds:
+  - id: repo-depot-server
+    main: ./server
+    binary: repo-depot-server
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+
+  - id: repo
+    main: ./cli
+    binary: repo
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+
+  - id: repo-depot-mcp
+    main: ./server/cmd/mcp
+    binary: repo-depot-mcp
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+
+archives:
+  - id: server
+    ids:
+      - repo-depot-server
+    formats:
+      - tar.gz
+    name_template: >-
+      repo-depot-server_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else }}{{ .Arch }}{{ end }}
+
+  - id: cli
+    ids:
+      - repo
+    formats:
+      - tar.gz
+    name_template: >-
+      repo_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else }}{{ .Arch }}{{ end }}
+
+  - id: mcp
+    ids:
+      - repo-depot-mcp
+    formats:
+      - tar.gz
+    name_template: >-
+      repo-depot-mcp_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else }}{{ .Arch }}{{ end }}
+
+checksum:
+  name_template: "checksums.txt"
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+# vim: set ts=2 sw=2 tw=0 fo=cnqoj

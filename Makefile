@@ -37,7 +37,7 @@ build/server: ## Build the server binary
 .PHONY: build/cli
 build/cli: ## Build the CLI binary
 	@mkdir -p bin
-	go build -o bin/rdcli ./cli
+	go build -o bin/repo ./cli
 
 .PHONY: build/mcp
 build/mcp: ## Build the MCP server binary
@@ -108,6 +108,16 @@ install-tools: ## Install dev tools (air, protoc plugins)
 	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 
+##@ Release
+
+.PHONY: release/snapshot
+release/snapshot: ## Build a snapshot release locally (no publish)
+	goreleaser release --snapshot --clean
+
+.PHONY: release/check
+release/check: ## Validate .goreleaser.yaml
+	goreleaser check
+
 .PHONY: clean
 clean: ## Remove build artifacts
-	rm -rf bin/ tmp/ coverage.out
+	rm -rf bin/ tmp/ dist/ coverage.out
